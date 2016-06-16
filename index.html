@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" context="text/html; chartset=utf-8" />
+    <title>Last Colony</title>
+    <script src="Js/common.js" type="text/javascript" chartset="utf-8"></script>
+    <script src="Ref/jquery/jquery-1.12.3.js" type="text/javascript" charset="utf-8"></script>
+    <script src="Js/astar.js" type="text/javascript" charset="utf-8"></script>
+    <script src="Js/game.js" type="text/javascript" charset="utf-8"></script>
+    <script src="Js/mouse.js" type="text/javascript" charset="utf-8"></script>
+    <script src="Js/singleplayer.js" type="text/javascript" charset="utf-8"></script>
+    <script src="Js/maps.js" type="text/javascript" charset="utf-8"></script>
+   
+    <!-- 定义游戏中的单位 -->
+    <script src="Js/buildings.js" type="text/javascript" charset="utf-8"></script>
+    <script src="Js/vehicles.js" type="text/javascript" charset="utf-8"></script>
+    <script src="Js/aircraft.js" type="text/javascript" charset="utf-8"></script>
+    <script src="Js/terrain.js" type="text/javascript" charset="utf-8"></script>
+    <script src="Js/sidebar.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" href="styles.css" type="text/css" media="screen" charset="utf-8" />
+</head>
+<body>
+    <div id="gamecontainer">
+        <!-- 启动画面 -->
+        <div id="gamestartscreen" class="gamelayer">
+            <span id="singleplayer" onclick="singleplayer.start();">单人战役<br />(Campaign)</span><br />
+            <span id="multiplayer" onclick="multiplayer.start();">多人连线<br />(Multiplayer)</span><br />
+        </div>
+        <!-- 使命窗口 -->
+        <div id="missionscreen" class="gamelayer">
+            <input type="button" id="entermission" onclick="singleplayer.play();" />
+            <input type="button" id="exitmission" onclick="singleplayer.exit();" />
+            <div id="missionbriefing"></div>
+        </div>
+        <!-- 游戏界面 -->
+        <div id="gameinterfacescreen" class="gamelayer">
+            <div id="gamemessages"></div>
+            <div id="callerpicture"></div>
+            <div id="cash"></div>
+            <div id="sidebarbuttons">
+                <input type="button" id="starportbutton" title="Starport" />
+                <input type="button" id="turretbutton" title="Turret" />
+                <input type="button" id="placeholder1" disabled />
+
+                <input type="button" id="scouttankbutton" title="Scout Tank" />
+                <input type="button" id="heavytankbutton" title="Heavy Tank" />
+                <input type="button" id="harvesterbutton" title="Harvester" />
+
+                <input type="button" id="chopperbutton" title="Copter" />
+                <input type="button" id="wraithbutton" title="Wraith" />
+                <input type="button" id="placeholder2" disabled />
+            </div>
+            <canvas id="gamebackgroundcanvas" height="400" width="480"></canvas>
+            <canvas id="gameforegroundcanvas" height="400" width="480"></canvas>
+        </div>
+        <!-- 加载画面 -->
+        <div id="loadingscreen" class="gamelayer">
+            <div id="loadingmessage"></div>
+        </div>
+    </div>
+</body>
+</html>
