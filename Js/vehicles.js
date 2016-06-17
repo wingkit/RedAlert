@@ -106,7 +106,26 @@
 						this.animationIndex = 0;
 					}
 					break;
+				case "teleport":
+					var direction = wrapDirection(Math.round(this.direction), this.directions);
+					this.imageList = this.spriteArray["stand-" + direction];
+					this.imageOffset = this.imageList.offset + this.animationIndex;
+					this.animationIndex++;
 
+					if (this.animationIndex >= this.imageList.count) {
+						this.animationIndex = 0;
+					}
+
+					if (!this.brightness) {
+						this.brightness = 1;
+					}
+
+					this.brightness -= 0.05;
+					if (this.brightness <= 0) {
+						this.brightness = undefined;
+						this.action = "stand";
+					}
+					break;
 			}
 		},
 		drawLifeBar: function () {
@@ -145,6 +164,14 @@
 			var colorIndex = (this.team == "blue") ? 0 : 1;
 			var colorOffset = colorIndex * this.pixelHeight;
 			game.foregroundContext.drawImage(this.spriteSheet, this.imageOffset * this.pixelWidth, colorOffset, this.pixelWidth, this.pixelHeight, x, y, this.pixelWidth, this.pixelHeight);
+
+			// 绘制出现的光圈
+			if (this.brightness) {
+				game.foregroundContext.beginPath();
+				game.foregroundContext.arc(x + this.pixelOffsetX, y + this.pixelOffsetY, this.radius, 0, Math.PI * 2, false);
+				game.foregroundContext.fillStyle = 'rgba(255, 255, 255,' + this.brightness + ')';
+				game.foregroundContext.fill();
+			}
 		},
 		lastMovementX: 0,
 		lastMovementY: 0,

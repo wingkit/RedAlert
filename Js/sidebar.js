@@ -12,10 +12,10 @@ var sidebar = {
 			sidebar.constructAtStarport({ type: "vehicles", "name": "harvester" });
 		});
 		$("#chopperbutton").click(function () {
-			sidebar.constructAtStarport({ type: "vehicles", "name": "chopper" });
+			sidebar.constructAtStarport({ type: "aircraft", "name": "chopper" });
 		});
 		$("#wraithbutton").click(function () {
-			sidebar.constructAtStarport({ type: "vehicles", "name": "wraith" });
+			sidebar.constructAtStarport({ type: "aircraft", "name": "wraith" });
 		});
 	},
 
@@ -56,7 +56,7 @@ var sidebar = {
 				$("#starportbutton").removeAttr("disabled");
 			}
 			if (game.currentLevel.requirements.buildings.indexOf('ground-turret') > -1 && cashBalance >= buildings.list["ground-turret"].cost) {
-				$("#turretButton").removeAttr("disabled");
+				$("#turretbutton").removeAttr("disabled");
 			}
 		}
 
@@ -71,10 +71,10 @@ var sidebar = {
 			if (game.currentLevel.requirements.vehicles.indexOf('harvester') > -1 && cashBalance >= vehicles.list["harvester"].cost) {
 				$("#harvesterbutton").removeAttr("disabled");
 			}
-			if (game.currentLevel.requirements.vehicles.indexOf('chopper') > -1 && cashBalance >= vehicles.list["chopper"].cost) {
+			if (game.currentLevel.requirements.aircraft.indexOf('chopper') > -1 && cashBalance >= aircraft.list["chopper"].cost) {
 				$("#chopperbutton").removeAttr("disabled");
 			}
-			if (game.currentLevel.requirements.vehicles.indexOf('wraith') > -1 && cashBalance >= vehicles.list["wraith"].cost) {
+			if (game.currentLevel.requirements.aircraft.indexOf('wraith') > -1 && cashBalance >= aircraft.list["wraith"].cost) {
 				$("#wraithbutton").removeAttr("disabled");
 			}
 		}

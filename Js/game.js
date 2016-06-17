@@ -296,7 +296,7 @@ var game = {
 	characters: {
 		"system": {
 			"name": "system",
-			"image":"Image/characters/system.png",
+			"image":"Images/characters/system.png",
 		}
 	},
 	showMessage: function (from, message) {

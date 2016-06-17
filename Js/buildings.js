@@ -41,6 +41,11 @@
 				[1, 1],
 				[1, 1],
 			],
+			passableGrid:[
+				[1, 1],
+				[0, 0],
+				[0, 0],
+			],
 			sight: 3,
 			cost: 2000,
 			hitPoints: 300,
@@ -68,8 +73,8 @@
 							}
 						};
 						
-						// ???
-						var cost = window[this.orders.details.type].ist[this.orders.details.name].cost;
+						// 
+						var cost = window[this.orders.details.type].list[this.orders.details.name].cost;
 						if (unitOnTop) {
 							if (this.team == game.team) {
 								game.showMessage("system", "Warning! Cannot teleport unit while landing bay is occupied.");
@@ -89,7 +94,7 @@
 							itemDetails.action = "teleport";
 							itemDetails.team = this.team;
 							game.cash[this.team] -= cost;
-							this.constructUnit = $.extend(true, [], itemDtails);
+							this.constructUnit = $.extend(true, [], itemDetails);
 						}
 						this.orders = { type: "stand" };
 						break;
