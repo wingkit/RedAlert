@@ -17,6 +17,14 @@ var sidebar = {
 		$("#wraithbutton").click(function () {
 			sidebar.constructAtStarport({ type: "aircraft", "name": "wraith" });
 		});
+		
+		// 初始化建筑建造按钮
+		$('#starportbutton').click(function () {
+			game.deployBuilding = "starport";
+		});
+		$('#turretbutton').click(function () {
+			game.deployBuilding = "ground-turret";
+		});
 	},
 
 	animate: function () {
@@ -25,6 +33,27 @@ var sidebar = {
 		
 		// 根据当前情况启用或禁用按钮
 		this.enableSidebarButtons();
+
+		if (game.deployBuilding) {
+			// 创建可用于建造建筑的网络，以示建筑可能被放置的位置
+			game.rebuildBuildableGrid();
+			// 与可用于建造建筑的网格比对，以示能否在当前鼠标位置放置建筑
+			var placementGrid = buildings.list[game.deployBuilding].buildableGrid;
+			// 进行深度拷贝placementGrid
+			game.placementGrid = $.extend(true, [], placementGrid);
+			game.canDeployBuilding = true;
+			for (var i = game.placementGrid.length - 1; i >= 0; i--) {
+				for (var j = game.placementGrid[i].length - 1; j >= 0; j--) {
+					if (game.placementGrid[i][j]
+						&& (mouse.gridY + i >= game.currentLevel.mapGridHeight
+						|| mouse.gridX + j >= game.currentLevel.mapGridWidth
+						|| game.currentMapBuildableGrid[mouse.gridY + i][mouse.gridX + j] == 1)) {
+						game.canDeployBuilding = false;
+						game.placementGrid[i][j] = 0;
+					}
+				};
+			};
+		}
 	},
 	enableSidebarButtons: function () {
 		// 仅当相应的建筑被选中时启用按钮
@@ -94,4 +123,26 @@ var sidebar = {
 			game.sendCommand([starport.uid], { type: "construct-unit", details: unitDetails });
 		}
 	},
+	cancelDeployingBuilding: function () {
+		game.deployBuilding = undefined;
+	},
+	finishDeployingBuilding: function () {
+		var buildingName = game.deployBuilding;
+		var base;
+		for (var i = game.selectedItems.length - 1; i >= 0; i--) {
+			var item = game.selectedItems[i];
+			if (item.type == "buildings" && item.name == "base" && item.team == game.team && item.lifeCode == "healthy" && item.action == "stand") {
+				base = item;
+				break;
+			}
+		};
+
+		if (base) {
+			var buildingDetails = { type: "buildings", name: buildingName, x: mouse.gridX, y: mouse.gridY };
+			game.sendCommand([base.uid], { type: "construct-building", details: buildingDetails });
+		}
+
+		// 清除deployBuilding标签
+		game.deployBuilding = undefined;
+	}
 }

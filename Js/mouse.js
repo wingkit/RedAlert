@@ -22,6 +22,15 @@
 		var shiftPressed = ev.shiftKey;
 
 		if (!rightClick) { // 玩家单击左键
+			// 如果游戏处于建造模式，左击将建造建筑
+			if (game.deployBuilding) {
+				if (game.canDeployBuilding) {
+					sidebar.finishDeployingBuilding();
+				} else {
+					game.showMessage("system", "Warning! Cannot deploy building here.")
+				}
+				return;
+			}
 			if (clickedItem) {
 				console.log("单击左键");
 				// 按住Shift键单机向已选择的单位集合中添加单位。如果没有按住Shift键，将清除选择集
@@ -32,6 +41,11 @@
 			}
 		} else { // 玩家单机右键
 			console.log("单击右键");
+			// 如果游戏处于建造模式，右击将放弃建造并退出该模式
+			if (game.deployBuilding) {
+				sidebar.cancelDeployingBuilding();
+				return;
+			}
 			// 执行选择单位的攻击或移动行为
 			var uids = [];
 			if (clickedItem) { // 玩家在某处单击右键
@@ -127,6 +141,21 @@
 			var height = Math.abs(this.gameY - this.dragY);
 			game.foregroundContext.strokeStyle = 'yellow';
 			game.foregroundContext.strokeRect(x - game.offsetX, y - game.offsetY, width, height);
+		}
+		if (game.deployBuilding && game.placementGrid) {
+			var buildingType = buildings.list[game.deployBuilding];
+			var x = (this.gridX * game.gridSize) - game.offsetX;
+			var y = (this.gridY * game.gridSize) - game.offsetY;
+			for (var i = game.placementGrid.length - 1; i >= 0; i--) {
+				for (var j = game.placementGrid[i].length - 1; j >= 0; j--) {
+					if (game.placementGrid[i][j]) {
+						game.foregroundContext.fillStyle = "rgba(0, 0, 255, 0.3)";
+					} else {
+						game.foregroundContext.fillStyle = "rgba(255, 0, 0, 0.3)";
+					}
+					game.foregroundContext.fillRect(x + j * game.gridSize, y + i * game.gridSize, game.gridSize, game.gridSize);
+				};
+			};
 		}
 	},
 	calculateGameCoordinates: function () {

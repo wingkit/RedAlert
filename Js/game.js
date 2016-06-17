@@ -36,7 +36,8 @@ var game = {
 
 	// 记录背景是否移动了，是否需要被重绘
 	backgroundChanged: true,
-
+	// 创建网格，将不可通行网格单元赋值为1， 可通行赋值为0。
+	currentMapTerrainGrid: undefined,
 	// 控制循环，运行固定的时间
 	animationTimeout: 100, // 100毫秒，10次/s
 	offsetX: 0, // 地图平移偏移量，x和y
@@ -64,7 +65,7 @@ var game = {
 			return b.y - a.y + ((b.y == a.y) ? (a.x - b.x) : 0);
 		});
 	},
-	drawingInterpolationFactor:null,// 高延迟弥补插值因子
+	drawingInterpolationFactor: null,// 高延迟弥补插值因子
 	drawingLoop: function () {
 		// 处理地图平移
 		game.handlePadding();
@@ -85,7 +86,7 @@ var game = {
 		if (game.refreshBackground) {
 			game.backgroundContext.drawImage(game.currentMapImage, game.offsetX, game.offsetY, game.canvasWidth, game.canvasHeight, 0, 0, game.canvasWidth, game.canvasHeight);
 			game.refreshBackground = false;
-		} 
+		}
 		// 清空前景canvas
 		game.foregroundContext.clearRect(0, 0, game.canvasWidth, game.canvasHeight);
 
@@ -296,7 +297,7 @@ var game = {
 	characters: {
 		"system": {
 			"name": "system",
-			"image":"Images/characters/system.png",
+			"image": "Images/characters/system.png",
 		}
 	},
 	showMessage: function (from, message) {
@@ -314,5 +315,36 @@ var game = {
 		var newMessage = existingMessage + '<span>' + from + ':</span>' + message + '<br />';
 		$('#gamemessages').html(newMessage);
 		$('#gamemessages').animate({ scrollTop: $('#gamemessages').prop('scroll Height') });
+	},
+	canDeployBuilding: undefined,//
+	placementGrid: undefined,
+	// 生成可用于建造的网格
+	rebuildBuildableGrid: function () {
+		game.currentMapBuildableGrid = $.extend(true, [], game.currentMapTerrainGrid);
+		for (var i = game.items.length - 1; i >= 0; i--) {
+			var item = game.items[i];
+			if (item.type == "buildings" || item.type == "terrain") {
+				for (var y = item.buildableGrid.length - 1; y >= 0; y--) {
+					for (var x = item.buildableGrid[y].length - 1; x >= 0; x--) {
+						if (item.buildableGrid[y][x]) {
+							game.currentMapBuildableGrid[item.y + y][item.x + x] = 1;
+						}
+					};
+				};
+			} else if (item.type == "vehicle") {
+				// 将车辆下方及附近的网格设置为"不可建造"
+				var raidus = item.raidus / game.gridSize;
+				var x1 = Math.max(Math.floor(item.x - raidus), 0);
+				var x2 = Math.min(Math.floor(item.x + raidus), game.currentLevel.mapGridWidth - 1);
+				var y1 = Math.max(Math.floor(item.y - raidus), 0);
+				var y2 = Math.min(Maht.floor(item.y + raidus), game.currentLevel.mapGridHeight - 1);
+				for (var x = x1; x <= x2; x++) {
+					for (var y = y1; y <= y2; y++) {
+						game.currentMapBuildableGrid[y][x] = 1;
+					};
+				};
+			}
+		};
+
 	},
 }

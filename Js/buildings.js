@@ -25,8 +25,23 @@
 			spriteImages: [
 				{ name: "healthy", count: 4 },
 				{ name: "damaged", count: 1 },
-				{ name: "contructing", count: 3 },
+				{ name: "constructing", count: 3 },
 			],
+			processOrders: function () {
+				switch (this.orders.type) {
+					case "construct-building":
+						this.action = "construct";
+						this.animationIndex = 0;
+						var itemDetails = this.orders.details;
+						// 建造建筑，并从玩家资金中扣去建筑的价格
+						itemDetails.team = this.team;
+						itemDetails.action = "teleport";
+						var item = game.add(itemDetails);
+						game.cash[this.team] -= item.cost;
+						this.orders = { type: "stand" };
+						break;
+				}
+			},
 		},
 		"starport": {
 			name: "starport",
