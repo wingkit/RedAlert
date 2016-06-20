@@ -88,5 +88,34 @@
 	},
 	sendCommand: function (uids, details) {
 		game.processCommand(uids,details);
-	}
+	},
+	endLevel: function (success) {
+		clearInterval(game.animationInterval);
+		game.end();
+
+		if (success) {
+			var moreLevels = (singleplayer.currentLevel < maps.singleplayer.length - 1);
+			if (moreLevels) {
+				game.showMessageBox("Mission Accomplished.", function () {
+					$('.gamelayer').hide();
+					singleplayer.currentLevel++;
+					singleplayer.startCurrentLevel();
+				});
+			} else {
+				game.showMessageBox("Mission Accomplished.<br /> <br />This was the last mission in the campaign.<br/><br/>Thank you for playing.", function () {
+					$('.gamelayer').hide();
+					$('#gamestartscreen').show();
+				});
+			}
+		} else {
+			game.showMessageBox("Mission Failed.<br/><br/> Try again?", function () {
+				$('.gamelayer').hide();
+				singleplayer.startCurrentLevel();
+			}, function () {
+				$('.gamelayer').hide();
+				$('#gamestartscreen').show();
+			});
+		}
+	},
+
 }

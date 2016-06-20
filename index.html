@@ -30,7 +30,7 @@
         <div id="missionscreen" class="gamelayer">
             <input type="button" id="entermission" onclick="singleplayer.play();" />
             <input type="button" id="exitmission" onclick="singleplayer.exit();" />
-            <div id="missionbriefing"></div>
+            <div id="missionbriefing">Welcome to your first mission.</div>
         </div>
         <!-- 游戏界面 -->
         <div id="gameinterfacescreen" class="gamelayer">
@@ -52,6 +52,14 @@
             </div>
             <canvas id="gamebackgroundcanvas" height="400" width="480"></canvas>
             <canvas id="gameforegroundcanvas" height="400" width="480"></canvas>
+        </div>
+        <!-- 消息框 -->
+        <div id="messageboxscreen" class="gamelayer">
+            <div id="messagebox">
+                <span id="messageboxtext"></span>
+                <input type="button" id="messageboxok" onclick="game.messageBoxOk();" />
+                <input type="button" id="messageboxcancel" onclick="game.messageBoxCancel();" />
+            </div>
         </div>
         <!-- 加载画面 -->
         <div id="loadingscreen" class="gamelayer">

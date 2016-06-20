@@ -39,7 +39,7 @@
 				{ "type": "buildings", "name": "ground-turret", "x": 16, "y": 10, "team": "blue", "action": "teleport" },
 
 				{ "type": "vehicles", "name": "transport", "x": 26, "y": 10, "team": "blue", "direction": 2 },
-				{ "type": "vehicles", "name": "harvester", "x": 4, "y": 8, "team": "blue", "direction": 3, "uid":-1, },
+				{ "type": "vehicles", "name": "harvester", "x": 4, "y": 20, "team": "blue", "direction": 3, "uid":-1, },
 				{ "type": "vehicles", "name": "scout-tank", "x": 26, "y": 14, "team": "blue", "direction": 4 },
 				{ "type": "vehicles", "name": "heavy-tank", "x": 26, "y": 16, "team": "blue", "direction": 5 },
 
@@ -109,6 +109,30 @@
 				[26, 35], [27, 35], [25, 36], [26, 36], [27, 36], [25, 37], [26, 37], [23, 38], [24, 38], [25, 38], [26, 38],
 				[26, 39], [2, 25], [9, 19], [36, 31]
 			],
+			/* 条件和时间触发器事件 */
+			"triggers": [
+				// 时间事件
+				{
+					"type": "timed", "time": 1000, "action": function () {
+						game.showMessage("system", "You have 20 seconds left.\nGet the harvester near the oil field.");
+					}
+				},
+				{
+					"type": "timed", "time": 21000, "action": function () {
+						singleplayer.endLevel(false);
+					}
+				},
+				// 条件事件
+				{
+					"type": "conditional", "condition": function () {
+						var transport = game.getItemByUid(-1);
+						return (transport.x < 10 && transport.y < 10);
+					},
+					"action": function () {
+						singleplayer.endLevel(true);
+					}
+				}
+			]
 		},
 	]
 }

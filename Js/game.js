@@ -30,6 +30,12 @@ var game = {
 		game.refreshBackground = true;
 
 		game.drawingLoop();
+
+		$('#gamemessages').html('');
+		// 初始化所有的触发器
+		for (var i = game.currentLevel.triggers.length - 1 ; i >= 0; i--) {
+			game.initTrigger(game.currentLevel.triggers[i]);
+		};
 	},
 	// 地图被分割成20像素X20像素的方形网格
 	gridSize: 20,
@@ -347,4 +353,88 @@ var game = {
 		};
 
 	},
+	// 与消息框相关的代码
+	messageBoxOkCallback: undefined,
+	messageBoxCancelCallback: undefined,
+	showMessageBox: function (message, onOk, onCancel) {
+		// 设置消息框文本
+		$('#messageboxtext').html(message);
+
+		// 设置消息框ok和cancel按钮处理函数，启用按钮
+		if (!onOk) {
+			game.messageBoxOkCallback = undefined;
+		} else {
+			game.messageBoxOkCallback = onOk;
+		}
+
+		if (!onCancel) {
+			game.messageBoxCancelCallback = undefined;
+			$('#messageboxcancel').hide();
+		} else {
+			game.messageBoxCancelCallback = onCancel;
+			$('#messageboxcancel').show();
+		}
+
+		// 显示消息框并等待用户响应
+		$('#messageboxscreen').show();
+
+	},
+	messageBoxOk: function () {
+		$('#messageboxscreen').hide();
+		if (game.messageBoxOkCallback) {
+			game.messageBoxOkCallback();
+		}
+	},
+	messageBoxCancel: function () {
+		$('#messageboxscreen').hide();
+		if (game.messageBoxCancelCallback) {
+			game.messageBoxCancelCallback();
+		}
+	},
+	// 游戏中处理触发器事件的方法
+	initTrigger: function (trigger) {
+		if (trigger.type == "timed") {
+			trigger.timeout = setTimeout(function () {
+				game.runTrigger(trigger);
+			}, trigger.time);
+		} else if (trigger.type == "conditional") {
+			trigger.interval = setInterval(function () {
+				game.runTrigger(trigger);
+			}, 1000);
+		}
+	},
+	runTrigger: function (trigger) {
+		if (trigger.type == "timed") {
+			// 基于触发器是否重复调用，重新初始化触发器
+			if (trigger.repeat) {
+				game.initTrigger(trigger);
+			}
+			// 调用触发器动作
+			trigger.action(trigger);
+		} else if (trigger.type == "conditional") {
+			// 检查条件是否满足
+			if (trigger.condition()) {
+				// 清除触发器
+				game.clearTrigger(trigger);
+				// 调用触发器动作
+				trigger.action(trigger);
+			}
+		}
+	},
+	clearTrigger: function (trigger) {
+		if (trigger.type == "timed") {
+			clearTimeout(trigger.timeout);
+		} else if (trigger.type == "conditional") {
+			clearInterval(trigger.interval);
+		}
+	},
+	end: function () {
+		// 清除游戏中所有的触发器
+		if (game.currentLevel.triggers) {
+			for (var i = game.currentLevel.triggers.length - 1; i >= 0; i--) {
+				game.clearTrigger(game.currentLevel.triggers[i]);
+			};
+		}
+		game.running = false;
+	}
 }
