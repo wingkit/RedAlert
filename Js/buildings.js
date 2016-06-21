@@ -56,7 +56,7 @@
 				[1, 1],
 				[1, 1],
 			],
-			passableGrid:[
+			passableGrid: [
 				[1, 1],
 				[0, 0],
 				[0, 0],
@@ -87,7 +87,7 @@
 								}
 							}
 						};
-						
+
 						// 
 						var cost = window[this.orders.details.type].list[this.orders.details.name].cost;
 						if (unitOnTop) {
@@ -142,7 +142,7 @@
 		"ground-turret": {
 			name: "ground-turret",
 			canAttack: true,
-			canAttackLan: true,
+			canAttackLand: true,
 			canAttackAir: false,
 			weaponType: "cannon-ball",
 			action: "guard", // 默认动作为“guard"
@@ -169,6 +169,57 @@
 				{ name: "healthy", count: 1, directions: 8 },
 				{ name: "damaged", count: 1 },
 			],
+			isValidTarget: isValidTarget,
+			findTargetsInSight: findTargetsInSight,
+			processOrders: function () {
+				if (this.reloadTimeLeft) {
+					this.reloadTimeLeft--;
+				}
+				// 损坏的炮塔不能攻击
+				if (this.lifeCode != "healthy") {
+					return;
+				}
+				switch (this.orders.type) {
+					case "guard":
+						var targets = this.findTargetsInSight();
+						if (targets.length > 0) {
+							this.orders = { type: "attack", to: targets[0] };
+						}
+						break;
+					case "attack":
+						if (!this.orders.to ||
+							this.orders.to.lifeCode == "dead" ||
+							!this.isValidTarget(this.orders.to) ||
+							(Math.pow(this.orders.to.x - this.x, 2) + Math.pow(this.orders.to.y - this.y, 2) > Math.pow(this.sight, 2))
+							) {
+							var targets = this.findTargetsInSight();
+							if (targets.length > 0) {
+								this.orders.to = targets[0];
+							} else {
+								this.orders = { type: "guard" };
+							}
+						}
+						if (this.orders.to) {
+							var newDirection = findFiringAngle(this.orders.to, this, this.directions);
+							var difference = angleDiff(this.direction, newDirection, this.directions);
+							var turnAmount = this.turnSpeed * game.turnSpeedAdjustmentFactor;
+							if (Math.abs(difference) > turnAmount) {
+								this.direction = wrapDirection(this.direction + turnAmount * Math.abs(difference) / difference, this.directions);
+								return;
+							} else {
+								this.direction = newDirection;
+								if (!this.reloadTimeLeft) {
+									this.reloadTimeLeft = bullets.list[this.weaponType].reloadTime;
+									var angleRadians = -(Math.round(this.direction) / this.directions) * 2 * Math.PI;
+									var bulletX = this.x + 0.5 - (1 * Math.sin(angleRadians));
+									var bulletY = this.y + 0.5 - (1 * Math.cos(angleRadians));
+									var bullet = game.add({ name: this.weaponType, type: "bullets", x: bulletX, y: bulletY, direction: this.direction, target: this.orders.to });
+								}
+							}
+						}
+						break;
+				}
+			}
 
 		}
 		// #endregion
@@ -281,7 +332,8 @@
 						this.imageList = this.spriteArray[this.lifeCode];
 					} else {
 						// 完好的炮塔有8个方向
-						this.imageList = this.spriteArray[this.lifeCode + "-" + this.direction];
+						var direction = wrapDirection(Math.round(this.direction), this.directions);
+						this.imageList = this.spriteArray[this.lifeCode + "-" + direction];
 					}
 					this.imageOffset = this.imageList.offset;
 					break;
@@ -299,7 +351,7 @@
 			game.foregroundContext.lineWidth = 1;
 			game.foregroundContext.strokeRect(x, y, this.baseWidth, game.lifeBarHeight);
 		},
-		drawSelection:function(){
+		drawSelection: function () {
 			var x = this.drawingX + this.pixelOffsetX;
 			var y = this.drawingY + this.pixelOffsetY;
 			game.foregroundContext.strokeStyle = game.selectionBorderColor;

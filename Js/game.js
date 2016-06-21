@@ -96,9 +96,17 @@ var game = {
 		// 清空前景canvas
 		game.foregroundContext.clearRect(0, 0, game.canvasWidth, game.canvasHeight);
 
+
 		// 绘制前景上的物体
 		for (var i = game.sortedItems.length - 1; i >= 0; i--) {
-			game.sortedItems[i].draw();
+			if (game.sortedItems[i].type != "bullets") {
+				game.sortedItems[i].draw();
+			}
+		};
+
+		// 在其他所有的物体上方绘制炮弹
+		for (var i = game.bullets.length - 1; i >= 0; i--) {
+			game.bullets[i].draw();
 		};
 
 		// 绘制鼠标
@@ -157,6 +165,7 @@ var game = {
 		game.triggeredEvents = [];
 		game.selectedItems = [];
 		game.sortedItems = [];
+		game.bullets = [];
 	},
 	add: function (itemDetails) {
 		// 为每个单位项设置唯一的id

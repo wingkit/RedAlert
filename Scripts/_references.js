@@ -15,3 +15,4 @@
 /// <reference path="../Js/terrain.js" />
 /// <reference path="../Js/astar.js" />
 /// <reference path="../Js/sidebar.js" />
+/// <reference path="../Js/bullets.js" />

@@ -110,7 +110,12 @@ function loadItem(name) {
 			};
 			item.spriteCount += constructImageCount;
 		}
+	};
+	// 如果单位具有武器，同时加载武器
+	if (item.weaponType) {
+		bullets.load(item.weaponType);
 	}
+
 }
 
 // 默认的add()方法被游戏中所有的单位使用
@@ -161,4 +166,60 @@ function wrapDirection(direction, directions) {
 		direction -= directions;
 	}
 	return direction;
+}
+
+function findFiringAngle(target, source, directions) {
+	var dy = (target.y) - (source.y);
+	var dx = (target.x) - (source.x);
+
+	if (target.type == "buildings") {
+		dy += target.baseWidth / 2 / game.gridSize;
+		dx += target.baseHeight / 2 / game.gridSize;
+	} else if (target.type == "aircraft") {
+		dy -= target.pixelShadowHeight / game.gridSize;
+	}
+
+	if (source.type == "buildings") {
+		dy -= source.baseWidth / 2 / game.gridSize;
+		dy -= source.baseHeight / 2 / game.gridSize;
+	} else if (source.type == "aircraft") {
+		dy += source.pixelShadowHeight / game.gridSize;
+	}
+
+	// 将正切值转换为方向值（0~7）
+	var angel = wrapDirection(directions / 2 - (Math.atan2(dx, dy) * directions / (2 * Math.PI)), directions);
+	return angel;
+}
+
+// 与战斗有关的公用方法
+// 是否有效的攻击单位
+function isValidTarget(item) {
+	// 找出不是同一队的且可以攻击的单位
+	return item.team != this.team &&
+		(this.canAttackLand && (item.type == "buildings" || item.type == "vehicles") ||
+		(this.canAttackAir && (item.type == "aircraft")));
+}
+
+// 查找目标列表
+function findTargetsInSight(increment) {
+	if (!increment) {
+		increment = 0;
+	}
+	var targets = [];
+	for (var i = game.items.length - 1; i >= 0; i--) {
+		var item = game.items[i];
+		if (this.isValidTarget(item)) {
+			if (Math.pow(item.x - this.x, 2) + Math.pow(item.y - this.y, 2) < Math.pow(this.sight + increment, 2)) {
+				targets.push(item);
+			}
+		}
+	};
+
+	// 按照与攻击者的距离对目标进行排序
+	var attacker = this;
+	targets.sort(function (a, b) {
+		return (Math.pow(a.x - attacker.x, 2) + Math.pow(a.y - attacker.y, 2)) - (Math.pow(b.x - attacker.x, 2) + Math.pow(b.y - attacker.y, 2));
+	});
+	return targets;
+
 }

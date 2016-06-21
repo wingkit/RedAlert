@@ -175,15 +175,20 @@
 		},
 		lastMovementX: 0,
 		lastMovementY: 0,
+		isValidTarget: isValidTarget,
+		findTargetsInSight: findTargetsInSight,
 		processOrders: function () {
 			this.lastMovementX = 0;
 			this.lastMovementY = 0;
+			if (this.reloadTimeLeft) {
+				this.reloadTimeLeft--;
+			}
 			switch (this.orders.type) {
 				case "move":
 					// 向目标位置移动， 知道距离小于车辆半径
 					var distanceFromDestinationSquared = (Math.pow(this.orders.to.x - this.x, 2) + Math.pow(this.orders.to.y - this.y, 2));
 					if (distanceFromDestinationSquared < Math.pow(this.radius / game.gridSize, 2)) {
-						// 到达目标位置时停止
+						// 距离目标1个半径内时停下
 						this.orders = { type: "stand" };
 						return;
 					} else if (distanceFromDestinationSquared < Math.pow(this.radius * 3 / game.gridSize, 2)) {
@@ -191,7 +196,7 @@
 						this.orders = { type: "stand" };
 						return;
 					} else {
-						if (this.colliding && (Math.pow(this.orders.to.x - this.x, 2) + Math.pow(this.orders.to.y - this.y, 2)) < Math.pow(this.radius * 5 / game.gridSize, 2)) {
+						if (this.colliding && distanceFromDestinationSquared < Math.pow(this.radius * 5 / game.gridSize, 2)) {
 							// 统计目标5倍半径内的接触数量
 							if (!this.orders.collisionCount) {
 								this.orders.collisionCount = 1
@@ -243,6 +248,94 @@
 							this.orders = { type: "stand" };
 						}
 					}
+					break;
+				case "stand":
+					var targets = this.findTargetsInSight();
+					if (targets.length > 0) {
+						this.orders = { type: "attack", to: targets[0] };
+					}
+					break;
+				case "sentry":
+					var targets = this.findTargetsInSight(2);
+					if (targets.length > 0) {
+						this.orders = { type: "attack", to: targets[0], nextOrder: this.orders };
+					}
+					break;
+				case "hunt":
+					var targets = this.findTargetsInSight(100);
+					if (targets.length > 0) {
+						this.orders = { type: "attack", to: targets[0], nextOrder: this.orders };
+					}
+					break;
+				case "attack":
+					if (this.orders.to.lifeCode == "dead" || !this.isValidTarget(this.orders.to)) {
+						if (this.orders.nextOrder) {
+							this.orders = this.orders.nextOrder;
+						} else {
+							this.orders = { type: "stand" };
+						}
+						return;
+					}
+					if ((Math.pow(this.orders.to.x - this.x, 2) + Math.pow(this.orders.to.y - this.y, 2)) < Math.pow(this.sight, 2)) {
+						// 转向目标，进入射程之后开始攻击
+						var newDirection = findFiringAngle(this.orders.to, this, this.directions);
+						var difference = angleDiff(this.direction, newDirection, this.directions);
+						var turnAmount = this.turnSpeed * game.turnSpeedAdjustmentFactor;
+						if (Math.abs(difference) > turnAmount) {
+							this.direction = wrapDirection(this.direction + turnAmount * Math.abs(difference) / difference, this.directions);
+							return;
+						} else {
+							this.direction = newDirection;
+							if (!this.reloadTimeLeft) {
+								this.reloadTimeLeft = bullets.list[this.weaponType].reloadTime;
+								var angleRadians = -(Math.round(this.direction) / this.directions) * 2 * Math.PI;
+								var bulletX = this.x - (this.radius * Math.sin(angleRadians) / game.gridSize);
+								var bulletY = this.y - (this.radius * Math.cos(angleRadians) / game.gridSize);
+								var bullet = game.add({ name: this.weaponType, type: "bullets", x: bulletX, y: bulletY, direction: newDirection, target: this.orders.to });
+							}
+						}
+					} else {
+						var moving = this.moveTo(this.orders.to);
+						// 路径规划算法不能找到合适的路径，停下
+						if (!moving) {
+							this.orders = { type: "stand" };
+							return;
+						}
+					}
+					break;
+				case "patrol":
+					var targets = this.findTargetsInSight(1);
+					if (targets.length > 0) {
+						this.orders = { type: "attack", to: targets[0], nextOrder: this.orders };
+						return;
+					}
+					if ((Math.pow(this.orders.to.x - this.x, 2) + Math.pow(this.orders.to.y - this.y, 2)) < Math.pow(this.radius * 4 / game.gridSize, 2)) {
+						var to = this.orders.to;
+						this.orders.to = this.orders.from;
+						this.orders.from = to;
+					} else {
+						this.moveTo(this.orders.to);
+					}
+					break;
+				case "guard":
+					if (this.orders.to.lifeCode == "dead") {
+						if (this.orders.nextOrder) {
+							this.orders = this.orders.nextOrder;
+						} else {
+							this.orders = { type: "stand" };
+						}
+						return;
+					}
+					if ((Math.pow(this.orders.to.x - this.x, 2) + Math.pow(this.orders.to.y - this.y, 2)) < Math.pow(this.sight - 2, 2)) {
+						var targets = this.findTargetsInSight(1);
+						if (targets.length > 0) {
+							this.orders = { type: "attack", to: targets[0], nextOrder: this.orders };
+							return;
+						}
+					} else {
+						this.moveTo(this.orders.to);
+					}
+					break;
 			}
 		},
 		moveTo: function (destination) {

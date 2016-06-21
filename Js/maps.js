@@ -11,14 +11,14 @@
 			// 预加载的单位类型
 			"requirements": {
 				"buildings": ["base", "starport", "harvester", "ground-turret", ],
-				"vehicles": ["transport", "harvester", "scout-tank", "heavy-tank",],
-				"aircraft": ["chopper", "wraith",],
+				"vehicles": ["transport", "harvester", "scout-tank", "heavy-tank", ],
+				"aircraft": ["chopper", "wraith", ],
 				"terrain": ["oilfield", "bigrocks", "smallrocks", ],
 			},
 			// 与经济系统相关
-			"cash":{
+			"cash": {
 				"blue": 5000,
-				"green": 1000,
+				"green": 900000,
 			},
 
 			// 预加载的单位项
@@ -28,8 +28,8 @@
 				{ "type": "buildings", "name": "base", "x": 15, "y": 15, "team": "green", "life": 50 },
 
 				{ "type": "buildings", "name": "starport", "x": 18, "y": 15, "team": "blue" },
-				{ "type": "buildings", "name": "starport", "x": 18, "y": 10, "team": "blue", "action":"teleport" },
-				{ "type": "buildings", "name": "starport", "x": 18, "y": 6, "team": "green", "action": "open" },
+				{ "type": "buildings", "name": "starport", "x": 18, "y": 10, "team": "blue", "action": "teleport" },
+				{ "type": "buildings", "name": "starport", "x": 38, "y": 25, "team": "green", "action": "open", "uid": -1,},
 
 				{ "type": "buildings", "name": "harvester", "x": 20, "y": 12, "team": "blue", },
 				{ "type": "buildings", "name": "harvester", "x": 22, "y": 12, "team": "green", "action": "deploy" },
@@ -39,7 +39,7 @@
 				{ "type": "buildings", "name": "ground-turret", "x": 16, "y": 10, "team": "blue", "action": "teleport" },
 
 				{ "type": "vehicles", "name": "transport", "x": 26, "y": 10, "team": "blue", "direction": 2 },
-				{ "type": "vehicles", "name": "harvester", "x": 4, "y": 20, "team": "blue", "direction": 3, "uid":-1, },
+				{ "type": "vehicles", "name": "harvester", "x": 4, "y": 20, "team": "blue", "direction": 3 },
 				{ "type": "vehicles", "name": "scout-tank", "x": 26, "y": 14, "team": "blue", "direction": 4 },
 				{ "type": "vehicles", "name": "heavy-tank", "x": 26, "y": 16, "team": "blue", "direction": 5 },
 
@@ -49,10 +49,11 @@
 				{ "type": "vehicles", "name": "heavy-tank", "x": 28, "y": 16, "team": "green", "direction": 0 },
 
 				{ "type": "aircraft", "name": "chopper", "x": 20, "y": 22, "team": "blue", "direction": 2 },
+				{ "type": "aircraft", "name": "chopper", "x": 22, "y": 22, "team": "green", "direction": 2 },
 				{ "type": "aircraft", "name": "wraith", "x": 23, "y": 22, "team": "green", "direction": 3 },
 
 				{ "type": "terrain", "name": "oilfield", "x": 5, "y": 7 },
-				{ "type": "terrain", "name": "oilfield", "x": 8, "y": 7, "action":"hint" },
+				{ "type": "terrain", "name": "oilfield", "x": 8, "y": 7, "action": "hint" },
 				{ "type": "terrain", "name": "bigrocks", "x": 5, "y": 3 },
 				{ "type": "terrain", "name": "smallrocks", "x": 8, "y": 3 },
 			],
@@ -114,9 +115,63 @@
 				// 时间事件
 				{
 					"type": "timed", "time": 1000, "action": function () {
-						game.showMessage("system", "You have 20 seconds left.\nGet the harvester near the oil field.");
+						game.showMessage("system", "长官，游戏开始了");
 					}
 				},
+				{
+					"type": "timed", "time": 1000, "action": function () {
+						game.sendCommand([-1], {
+							type: "construct-unit", details: {
+								type: "aircraft", name: "wraith",
+								orders: { "type": "patrol", "from": { "x": 22, "y": 30 }, "to": { "x": 15, "y": 21 } }
+							}
+						});
+					}
+				},
+				{
+					"type": "timed", "time": 5000, "action": function () {
+						game.sendCommand([-1], {
+							type: "construct-unit", details: {
+								type: "aircraft", name: "chopper",
+								orders: { "type": "patrol", "from": { "x": 22, "y": 30 }, "to": { "x": 15, "y": 21 } }
+							}
+						});
+					}
+				},
+				{
+					"type": "timed", "time": 10000, "action": function () {
+						game.sendCommand([-1], {
+							type: "construct-unit", details: {
+								type: "vehicles", name: "heavy-tank",
+								orders: { "type": "patrol", "from": { "x": 22, "y": 30 }, "to": { "x": 15, "y": 21 } }
+							}
+						});
+					}
+				},
+				{
+					"type": "timed", "time": 15000, "action": function () {
+						game.sendCommand([-1], {
+							type: "construct-unit", details: {
+								type: "vehicles", name: "scout-tank",
+								orders: { "type": "patrol", "from": { "x": 22, "y": 30 }, "to": { "x": 15, "y": 21 } }
+							}
+						});
+					}
+				},
+				{
+					"type": "timed", "time": 60000, "action": function () {
+						game.showMessage("AI", "所有的敌人将集中来攻击你！")
+						var units = [];
+						for (var i = 0; i < game.items.length; i++) {
+							var item = game.items[i];
+							if (item.team == "green" && (item.type == "vehicles" || item.type == "aircraft")) {
+								units.push(item.uid);
+							}
+						};
+						game.sendCommand(units, { type: "hunt" });
+					}
+				},
+				/*
 				{
 					"type": "timed", "time": 21000, "action": function () {
 						singleplayer.endLevel(false);
@@ -132,6 +187,7 @@
 						singleplayer.endLevel(true);
 					}
 				}
+				*/
 			]
 		},
 	]
