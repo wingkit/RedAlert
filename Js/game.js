@@ -350,7 +350,7 @@ var game = {
 		var existingMessage = $('#gamemessages').html();
 		var newMessage = existingMessage + '<span>' + from + ':</span>' + message + '<br />';
 		$('#gamemessages').html(newMessage);
-		$('#gamemessages').animate({ scrollTop: $('#gamemessages').prop('scroll Height') });
+		$('#gamemessages').animate({ scrollTop: $('#gamemessages').prop('scrollHeight') });
 	},
 	canDeployBuilding: undefined,//
 	placementGrid: undefined,
