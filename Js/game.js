@@ -10,6 +10,7 @@ var game = {
 		loader.init();
 		mouse.init();
 		sidebar.init();
+		sounds.init();
 
 		$('.gameloader').hide();
 		$('#gamestartscreen').show();

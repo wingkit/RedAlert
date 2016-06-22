@@ -61,6 +61,7 @@
 						// 接着命令它们攻击被右击的单位
 						if (uids.length > 0) {
 							game.sendCommand(uids, { type: "attack", toUid: clickedItem.uid });
+							sounds.play("acknowledge-attacking");
 						}
 					} else { // 玩家右击友方单位
 						// 从选中的单位中挑出能够移动的
@@ -73,6 +74,7 @@
 						// 接着命令它们守卫被单机的单位
 						if (uids.length > 0) {
 							game.sendCommand(uids, { type: "guard", toUid: clickedItem.uid });
+							sounds.play("acknowledge-moving");
 						}
 					}
 				} else if (clickedItem.name == "oilfield") { // 玩家右击一块油田
@@ -87,6 +89,7 @@
 					// 接着命令它在油田上展开
 					if (uids.length > 0) {
 						game.sendCommand(uids, { type: "deploy", toUid: clickedItem.uid });
+						sounds.play("acknowledge-moving");
 					}
 				}
 			} else { // 玩家右击地面
@@ -100,6 +103,7 @@
 				// 接着命令它们移动到单击的位置
 				if (uids.length > 0) {
 					game.sendCommand(uids, { type: "move", to: { x: mouse.gameX / game.gridSize, y: mouse.gameY / game.gridSize } })
+					sounds.play("acknowledge-moving");
 				}
 			}
 		}
