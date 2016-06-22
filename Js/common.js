@@ -223,3 +223,8 @@ function findTargetsInSight(increment) {
 	return targets;
 
 }
+
+function isItemDead(uid) {
+	var item = game.getItemByUid(uid);
+	return (!item || item.lifeCode == "dead");
+}

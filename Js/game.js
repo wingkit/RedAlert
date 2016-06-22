@@ -186,6 +186,9 @@ var game = {
 		if (item.type == "buildings" || item.type == "terrain") {
 			game.currentMapPassableGrid = undefined;
 		}
+		if (item.type == "bullets") {
+			sounds.play(item.name);
+		}
 		return item;
 	},
 	remove: function (item) {
@@ -318,9 +321,22 @@ var game = {
 		"system": {
 			"name": "system",
 			"image": "Images/characters/system.png",
-		}
+		},
+		"op": {
+			"name": "操作员",
+			"image":"Images/characters/girl1.png",
+		},
+		"pilot": {
+			"name": "飞行员",
+			"image":"Images/characters/girl2.png",
+		},
+		"driver": {
+			"name": "驾驶员",
+			"image":"Images/characters/man1.png",
+		},
 	},
 	showMessage: function (from, message) {
+		sounds.play('message-received');
 		var character = game.characters[from];
 		if (character) {
 			from = character.name;

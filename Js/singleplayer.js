@@ -5,7 +5,7 @@
 		$('.gamelayer').hide();
 
 		// 从第一关开始
-		singleplayer.currentLevel = 0;
+		singleplayer.currentLevel = 1;
 		game.type = "singleplayer";
 		game.team = "blue";
 
