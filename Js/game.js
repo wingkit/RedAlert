@@ -70,6 +70,8 @@ var game = {
 		game.sortedItems.sort(function (a, b) {
 			return b.y - a.y + ((b.y == a.y) ? (a.x - b.x) : 0);
 		});
+		fog.animate();
+		game.lastAnimationTime = (new Date()).getTime();
 	},
 	drawingInterpolationFactor: null,// 高延迟弥补插值因子
 	drawingLoop: function () {
@@ -108,6 +110,8 @@ var game = {
 		for (var i = game.bullets.length - 1; i >= 0; i--) {
 			game.bullets[i].draw();
 		};
+
+		fog.draw();
 
 		// 绘制鼠标
 		mouse.draw();

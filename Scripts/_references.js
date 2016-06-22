@@ -16,3 +16,4 @@
 /// <reference path="../Js/astar.js" />
 /// <reference path="../Js/sidebar.js" />
 /// <reference path="../Js/bullets.js" />
+/// <reference path="../Js/fog.js" />

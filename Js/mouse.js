@@ -105,6 +105,11 @@
 		}
 	},
 	itemUnderMouse: function () {
+		// 隐藏迷雾下的单位使其不能被选中
+		if (fog.isPointOverFog(mouse.gameX, mouse.gameY)) {
+			return;
+		}
+
 		for (var i = game.items.length - 1; i >= 0; i--) {
 			var item = game.items[i];
 

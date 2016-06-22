@@ -13,6 +13,7 @@
 		singleplayer.startCurrentLevel();
 	},
 	play:function() {
+		fog.initLevel();
 		game.animationLoop();
 		game.animationInterval = setInterval(game.animationLoop, game.animationTimeout);
 		game.start();
