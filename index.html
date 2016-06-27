@@ -9,6 +9,7 @@
     <script src="Js/game.js" type="text/javascript" charset="utf-8"></script>
     <script src="Js/mouse.js" type="text/javascript" charset="utf-8"></script>
     <script src="Js/singleplayer.js" type="text/javascript" charset="utf-8"></script>
+    <script src="Js/multiplayer.js" type="text/javascript" charset="utf-8"></script>
     <script src="Js/maps.js" type="text/javascript" charset="utf-8"></script>
    
     <!-- 定义游戏中的单位 -->
@@ -67,6 +68,13 @@
         <!-- 加载画面 -->
         <div id="loadingscreen" class="gamelayer">
             <div id="loadingmessage"></div>
+        </div>
+        <div id="multiplayerlobbyscreen" class="gamelayer">
+            <select id="multiplayergameslist" size="10">
+
+            </select>
+            <input type="button" id="multiplayerjoin" onclick="multiplayer.join();" />
+            <input type="button" id="multiplayercancel" onclick="multiplayer.cancel();" />
         </div>
     </div>
 </body>

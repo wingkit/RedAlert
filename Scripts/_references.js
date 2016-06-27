@@ -18,3 +18,6 @@
 /// <reference path="../Js/bullets.js" />
 /// <reference path="../Js/fog.js" />
 /// <reference path="../Js/sounds.js" />
+/// <reference path="../websocketdemo/websocketserver.js" />
+/// <reference path="../Js/multiplayer.js" />
+/// <reference path="../Js/server.js" />

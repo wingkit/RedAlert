@@ -184,40 +184,6 @@
 				this.reloadTimeLeft--;
 			}
 			switch (this.orders.type) {
-				case "move":
-					// 向目标位置移动， 知道距离小于车辆半径
-					var distanceFromDestinationSquared = (Math.pow(this.orders.to.x - this.x, 2) + Math.pow(this.orders.to.y - this.y, 2));
-					if (distanceFromDestinationSquared < Math.pow(this.radius / game.gridSize, 2)) {
-						// 距离目标1个半径内时停下
-						this.orders = { type: "stand" };
-						return;
-					} else if (distanceFromDestinationSquared < Math.pow(this.radius * 3 / game.gridSize, 2)) {
-						// 距离目标3倍半径时，如果检测到接触，则停止
-						this.orders = { type: "stand" };
-						return;
-					} else {
-						if (this.colliding && distanceFromDestinationSquared < Math.pow(this.radius * 5 / game.gridSize, 2)) {
-							// 统计目标5倍半径内的接触数量
-							if (!this.orders.collisionCount) {
-								this.orders.collisionCount = 1
-							} else {
-								this.orders.collisionCount++;
-							}
-							// 如果有超过30个接触，则停止
-							if (this.orders.collisionCount > 30) {
-								this.orders = { type: "stand" };
-								return;
-							}
-						}
-						// 试图向目标位置移动
-						var moving = this.moveTo(this.orders.to);
-						if (!moving) {
-							// 寻径算法不能找到路径，则停止
-							this.orders = { type: "stand" };
-							return;
-						}
-					}
-					break;
 				case "deploy":
 					// 如果油田已经被使用了，取消命令
 					if (this.orders.to.lifeCode == "dead") {
@@ -336,19 +302,53 @@
 						this.moveTo(this.orders.to);
 					}
 					break;
+				case "move":
+					// 向目标位置移动， 知道距离小于车辆半径
+					var distanceFromDestinationSquared = (Math.pow(this.orders.to.x - this.x, 2) + Math.pow(this.orders.to.y - this.y, 2));
+					if (distanceFromDestinationSquared < Math.pow(this.radius / game.gridSize, 2)) {
+						// 距离目标1个半径内时停下
+						this.orders = { type: "stand" };
+						return;
+					} else if (distanceFromDestinationSquared < Math.pow(this.radius * 3 / game.gridSize, 2)) {
+						// 距离目标3倍半径时，如果检测到接触，则停止
+						this.orders = { type: "stand" };
+						return;
+					} else {
+						if (this.colliding && distanceFromDestinationSquared < Math.pow(this.radius * 5 / game.gridSize, 2)) {
+							// 统计目标5倍半径内的接触数量
+							if (!this.orders.collisionCount) {
+								this.orders.collisionCount = 1
+							} else {
+								this.orders.collisionCount++;
+							}
+							// 如果有超过30个接触，则停止
+							if (this.orders.collisionCount > 30) {
+								this.orders = { type: "stand" };
+								return;
+							}
+						}
+						// 试图向目标位置移动
+						var moving = this.moveTo(this.orders.to);
+						if (!moving) {
+							// 寻径算法不能找到路径，则停止
+							this.orders = { type: "stand" };
+							return;
+						}
+					}
+					break;
 			}
 		},
-		moveTo: function (destination) {
+		moveTo: function (destination, collisionCount) {
 			if (!game.currentMapPassableGrid) {
 				game.rebuildPassableGrid();
 			}
-
+			
 			// 首先寻找到目标位置的路径
 			var start = [Math.floor(this.x), Math.floor(this.y)];
 			var end = [Math.floor(destination.x), Math.floor(destination.y)];
 
 			var grid = $.extend(true, [], game.currentMapPassableGrid);
-			// 允许目标位置为“可通行”，以便伏算法找到一条路径
+			// 允许目标位置为“可通行”，以便算法找到一条路径
 			if (destination.type == "buildings" || destination.type == "terrain") {
 				grid[Math.floor(destination.y)][Math.floor(destination.x)] = 0;
 			}
@@ -361,6 +361,8 @@
 			} else {
 				// 使用A*算法试图寻找到目标位置的路径
 				this.orders.path = AStar(grid, start, end, "Euclidean");
+				if (this.uid == -1)
+					console.log(this.orders.path);
 				if (this.orders.path.length > 1) {
 					var nextStep = { x: this.orders.path[1].x + 0.5, y: this.orders.path[1].y + 0.5 };
 					newDirection = findAngle(nextStep, this, this.directions);
@@ -435,7 +437,7 @@
 					this.direction = wrapDirection(this.direction + turnAmount * Math.abs(difference) / difference, this.directions);
 				}
 			}
-
+			if (this.uid == -1) console.log(start, end, forceVector, newDirection);
 			return true;
 		},
 		checkCollisionObjects: function (grid) {

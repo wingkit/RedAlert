@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset = utf-8" />
+    <title>WebSocket Client</title>
+    <script type="text/javascript" charset="utf-8">
+        var websocket;
+        var serverUrl = "ws://localhost:8090/";
+        // 展示消息
+        function displayMessage(message) {
+            document.getElementById("displaydiv").innerHTML += message + "<br />";
+        }
+        // 初始化WebSocket对象并设置事件响应方法
+        function initWebSocket() {
+            // 检查浏览器是否有一份WebSocket的实现（老版本的火狐浏览器使用MozWebSocket）
+            var WebSocketObject = window.WebSocket || window.MozWebSocket;
+            if (WebSocketObject) {
+                // 创建WebSocket对象
+                websocket = new WebSocketObject(serverUrl);
+
+                // 建立事件响应方法
+                websocket.onopen = function () {
+                    displayMessage("WebSocket Connection Opened");
+                    document.getElementById("sendmessage").disabled = false;
+                };
+
+                websocket.onclose = function () {
+                    displayMessage("WebSocket Connection Closed");
+                    document.getElementById("sendmessage").disabled = true;
+                };
+
+                websocket.onerror = function () {
+                    displayMessage("Connection Error Occured");
+                };
+
+                websocket.onmessage = function (message) {
+                    displayMessage("Received Message:<i>" + message.data + "</i>");
+                };
+            } else {
+                displayMessage("Your Browser does not support WebSocket");
+            }
+        }
+        
+        // 使用WebSocket向服务器发送数据
+        function sendMessage() {
+            // readState 可以为 CONNECTION/OPEN/CLOSING/CLOSED
+            if (websocket.readyState = websocket.OPEN) {
+                var message = document.getElementById("message").value;
+                displayMessage("Sending Message:<i>" + message + "</i>");
+                websocket.send(message);
+            } else {
+                displayMessage("Cannot send message. The WebSocket connection isn't open");
+            }
+        }
+    </script>
+</head>
+<body onload="initWebSocket();">
+    <label for="message">Message</label><input type="text" value="Simple Message" size="40" id="message" />
+    <input type="button" value="Send" id="sendmessage" onclick="sendMessage()" disabled="disabled" />
+    <div id="displaydiv" style="border:1px solid black; width:600px;height:400px;font-size:14px;"></div>
+</body>
+</html>
