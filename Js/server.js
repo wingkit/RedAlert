@@ -84,6 +84,15 @@ wsServer.on('request', function (request) {
 						player.room.lastTickConfirmed[player.color] = clientMessage.currentTick + player.tickLag;
 					}
 					break;
+				case "lose_game":
+					endGame(player.room, "那菜逼"+player.color+"队已经输了。")
+					break;
+				case "chat":
+					if (player.room && player.room.status == "running") {
+						var cleanedMessage = clientMessage.message.replace(/[<>]/g, "");
+						sendRoomWebSocketMessage(player.room, { type: "chat", from: player.color, message: cleanedMessage });
+					}
+					break;
 			}
 		}
 	});
@@ -100,7 +109,11 @@ wsServer.on('request', function (request) {
 			var status = player.room.status;
 			var roomId = player.room.roomId;
 			// 如果游戏还在运行中，就结束游戏
-			leaveRoom(player, roomId);
+			if (status == "running") {
+				endGame(player.room, player.color + "队的渣渣网速掉了。");
+			} else {
+				leaveRoom(player, roomId);
+			}
 			sendRoomListToEveryone();
 		}
 	});
@@ -256,4 +269,14 @@ function finishMeasuringLatency(player, clientMessage) {
 	console.log("Measuring Latency for player.Attempt ",
 		player.latencyTrips.length, "- Average Latency:",
 		player.averageLatency, "Tick Lag:", player.tickLag);
+}
+
+function endGame(room, reason) {
+	clearInterval(room.interval);
+	room.status = "empty";
+	sendRoomWebSocketMessage(room, { type: "end_game", reason: reason });
+	for (var i = room.players.length - 1; i >= 0; i--) {
+		leaveRoom(room.players[i], room.roomId);
+	};
+	sendRoomListToEveryone();
 }

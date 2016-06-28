@@ -468,9 +468,16 @@
 			"triggers": [
 				// 时间事件
 				{
-					"type": "timed", "time": 1000, "action": function () {
-						game.showMessage("system", "长官，游戏开始了");
-					}
+					"type": "conditional", "condition": function () {
+						for (var i = 0; i < game.items.length; i++) {
+							if (game.item[i].team == game.team) {
+								return false;
+							}
+						};
+						return true;
+					}, "action": function () {
+						multiplayer.loseGame();
+					},
 				},
 			],
 			// #endregion

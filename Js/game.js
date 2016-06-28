@@ -334,6 +334,12 @@ var game = {
 			"name": "驾驶员",
 			"image":"Images/characters/man1.png",
 		},
+		"blue": {
+			"name":"菜鸟蓝"
+		},
+		"green": {
+			"name":"菜鸟红"
+		},
 	},
 	showMessage: function (from, message) {
 		sounds.play('message-received');

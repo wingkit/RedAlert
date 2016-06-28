@@ -18,7 +18,13 @@
 			// 隐藏开始菜单层
 			$('.gamelayer').hide();
 			$('#multiplayerlobbyscreen').show();
-		}
+		};
+		this.websocket.onclose = function () {
+			multiplayer.endGame("服务器连接失败！");
+		};
+		this.websocket.onerror = function () {
+			multiplayer.endGame("服务器连接出错！");
+		};
 	},
 	handleWebSocketMessage: function (message) {
 		// JSON.stringify();
@@ -43,6 +49,12 @@
 			case "game_tick":
 				multiplayer.lastReceivedTick = messageObject.tick;
 				multiplayer.commands[messageObject.tick] = messageObject.commands;
+				break;
+			case "end_game":
+				multiplayer.endGame(messageObject.reason);
+				break;
+			case "chat":
+				game.showMessage(messageObject.from, messageObject.message);
 				break;
 		}
 
@@ -219,5 +231,45 @@
 			multiplayer.currentTick++;
 			multiplayer.sentCommandForTick = false;
 		}
+	},
+	// 告知服务器玩家输掉了游戏
+	loseGame: function () {
+		multiplayer.sendWebSocketMessage({ type: "lose_game" });
+	},
+	endGame: function (reason) {
+		game.running = false;
+		clearInterval(multiplayer.animationInterval);
+		// 显示技术游戏的原因，并按OK按钮，以退出多人对战游戏
+		game.showMessageBox(reason, multiplayer.closeAndExit);
 	}
 };
+
+$(window).keydown(function (e) {
+	// 仅当多人游戏运行时才允许聊天
+	if (game.type != "multiplayer" || !game.running) {
+		return;
+	}
+
+	var keyPressed = e.which;
+	if (keyPressed == 13) { // Enter
+		var isVisible = $('#chatmessage').is(':visible');
+		if (isVisible) {
+			// 如果聊天框可见，按下Enter键将发送消息并隐藏聊天框
+			if ($('#chatmessage').val()!==''){
+				multiplayer.sendWebSocketMessage({ type: "chat", message: $('#chatmessage').val() });
+				$('#chatmessage').val('');
+			}
+			$('#chatmessage').hide();
+		} else {
+			// 如果聊天框不可见，按下Enter键将显示聊天框
+			$('#chatmessage').show();
+			$('#chatmessage').focus();
+		}
+		e.preventDefault();
+	} else if (keyPressed == 27) { // Escape
+		// 按下Escape键将隐藏聊天框
+		$('#chatmessage').hide();
+		$('#chatmessage').val('');
+		e.preventDefault();
+	}
+});
