@@ -4,7 +4,7 @@
 #gamecontainer {
 	width: 640px;
 	height: 480px;
-	background: url(Images/splashscreen.png);
+	background: url(Images/beginlayerbg.png);
 	border: 1px solid black;
 }
 
@@ -26,16 +26,18 @@
 }
 
 	#gamestartscreen span {
-		margin: 20px;
+		margin: 15px;
 		font-family: 'Courier New', Courier, monospace;
-		font-size: 48px;
+		font-size: 28px;
 		cursor: pointer;
-		color: white;
-		text-shadow: -2px 0 purple, 0 2px purple, 2px 0 purple, 0 -2px purple;
+		color: rgba(255, 0, 0, 0.20);
+		/*text-shadow: -1px 0 cornflowerblue, 0 1px cornflowerblue, 1px 0 cornflowerblue, 0 -1px cornflowerblue;*/
+		text-shadow: 0 0 5px rgba(46, 196, 252, 0.20);
+		/*text-shadow: -1px 0 rgba(255, 255, 0, 0.20), 0 1px rgba(255, 255, 0, 0.20), 1px 0 rgba(255, 255, 0, 0.20), 0 -1px rgba(255, 255, 0, 0.20);*/
 	}
 
 		#gamestartscreen span:hover {
-			color: yellow;
+			color:  rgba(255, 0, 0, 0.90);
 		}
 
 /* 加载画面 */
@@ -373,9 +375,9 @@
 	position:absolute;
 	top:460px;
 	width:479px;
-	background:rgba(0, 255, 0, 0.1);
-	color:green;
-	border:1px solid green;
+	background:rgba(0, 155, 0, 0.1);
+	color:rgb(130, 150, 162);
+	border:1px solid rgba(0, 255, 0, 0.5);
 	display:none;
 }
 

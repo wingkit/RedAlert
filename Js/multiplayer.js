@@ -1,6 +1,6 @@
 ﻿var multiplayer = {
 	// 打开多人对战大厅
-	websocket_url: "ws://localhost:8090/",
+	websocket_url: "ws://192.168.1.141:8090/",
 	websocket: undefined,
 	chrrentLevel:0,
 	start: function () {
@@ -61,16 +61,16 @@
 	},
 	// 状态信息
 	statusMessage: {
-		'starting': 'Game Starting',
-		'running': 'Game in Progress',
-		'waiting': 'Awaiting second player',
-		'empty': 'Open',
+		'starting': '游戏开始',
+		'running': '游戏进行中',
+		'waiting': '等待第二个玩家',
+		'empty': '空闲',
 	},
 	updateRoomStatus: function (status) {
 		var $list = $('#multiplayergameslist');
 		$list.empty(); // 移除旧的选项
 		for (var i = 0; i < status.length; i++) {
-			var key = "Game " + (i + 1) + ". " + this.statusMessage[status[i]];
+			var key = "房间 " + (i + 1) + "号： " + this.statusMessage[status[i]];
 			$list.append(
 				$('<option></option>').attr("disabled", status[i] == "running" || status[i] == "starting")
 				.attr("value", (i + 1))

@@ -436,8 +436,8 @@
 			],
 			// 与经济系统相关
 			"cash": {
-				"blue": 1000,
-				"green": 1000,
+				"blue": 50000,
+				"green": 50000,
 			},
 
 			// 预加载的单位项
@@ -470,7 +470,7 @@
 				{
 					"type": "conditional", "condition": function () {
 						for (var i = 0; i < game.items.length; i++) {
-							if (game.item[i].team == game.team) {
+							if (game.items[i].team == game.team) {
 								return false;
 							}
 						};

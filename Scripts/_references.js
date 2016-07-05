@@ -21,3 +21,4 @@
 /// <reference path="../websocketdemo/websocketserver.js" />
 /// <reference path="../Js/multiplayer.js" />
 /// <reference path="../Js/server.js" />
+/// <reference path="../Js/debugtool.js" />

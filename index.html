@@ -21,14 +21,15 @@
     <script src="Js/bullets.js" type="text/javascript" charset="utf-8"></script>
     <script src="Js/fog.js" type="text/javascript" charset="utf-8"></script>
     <script src="Js/sounds.js" type="text/javascript" charset="utf-8"></script>
+    <script src="Js/debugtool.js" type="text/javascript" charset="utf-8"></script>
     <link rel="stylesheet" href="styles.css" type="text/css" media="screen" charset="utf-8" />
 </head>
-<body>
+<body style="background-color:black;" onbeforeunload="return false">
     <div id="gamecontainer">
         <!-- 启动画面 -->
         <div id="gamestartscreen" class="gamelayer">
-            <span id="singleplayer" onclick="singleplayer.start();">单人战役<br />(Campaign)</span><br />
-            <span id="multiplayer" onclick="multiplayer.start();">多人连线<br />(Multiplayer)</span><br />
+            <span id="singleplayer" onclick="singleplayer.start();"><span title="(Campaign)">单人战役</span></span><br />
+            <span id="multiplayer" onclick="multiplayer.start();"><span title="(Multiplayer)">多人连线</span></span><br />
         </div>
         <!-- 使命窗口 -->
         <div id="missionscreen" class="gamelayer">
@@ -42,16 +43,16 @@
             <div id="callerpicture"></div>
             <div id="cash"></div>
             <div id="sidebarbuttons">
-                <input type="button" id="starportbutton" title="Starport" />
-                <input type="button" id="turretbutton" title="Turret" />
+                <input type="button" id="starportbutton" title="建筑中心(Starport)" />
+                <input type="button" id="turretbutton" title="防御建筑(Turret)" />
                 <input type="button" id="placeholder1" disabled />
 
-                <input type="button" id="scouttankbutton" title="Scout Tank" />
-                <input type="button" id="heavytankbutton" title="Heavy Tank" />
-                <input type="button" id="harvesterbutton" title="Harvester" />
+                <input type="button" id="scouttankbutton" title="侦查坦克(Scout Tank)" />
+                <input type="button" id="heavytankbutton" title="重型坦克(Heavy Tank)" />
+                <input type="button" id="harvesterbutton" title="采油车(Harvester)" />
 
-                <input type="button" id="chopperbutton" title="Copter" />
-                <input type="button" id="wraithbutton" title="Wraith" />
+                <input type="button" id="chopperbutton" title="直升机(Copter)" />
+                <input type="button" id="wraithbutton" title="幽灵战机(Wraith)" />
                 <input type="button" id="placeholder2" disabled />
             </div>
             <canvas id="gamebackgroundcanvas" height="400" width="480"></canvas>

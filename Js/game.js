@@ -121,6 +121,8 @@ var game = {
 		if (game.running) {
 			requestAnimationFrame(game.drawingLoop);
 		}
+
+		if (debugtool.isOn) debugtool.draw();
 	},
 	panningThreshold: 60, // 与canvas边缘的距离，在此距离范围内拖拽鼠标进行地图平移
 	panningSpeed: 10, // 每个绘画循环平移的像素数

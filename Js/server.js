@@ -110,7 +110,7 @@ wsServer.on('request', function (request) {
 			var roomId = player.room.roomId;
 			// 如果游戏还在运行中，就结束游戏
 			if (status == "running") {
-				endGame(player.room, player.color + "队的渣渣网速掉了。");
+				endGame(player.room, player.color + "队的渣渣网络掉了。");
 			} else {
 				leaveRoom(player, roomId);
 			}
